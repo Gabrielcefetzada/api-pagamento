@@ -1,0 +1,25 @@
+meta {
+  name: Registrar Lojista
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/register-store-keeper
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: 
+}
+
+body:json {
+  {
+    "email":"new-user@email.com",
+    "password":"Da2!abcd",
+    "cnpj": "87170970000113",
+    "cpf":"15148677619",
+    "name": " "
+  }
+}

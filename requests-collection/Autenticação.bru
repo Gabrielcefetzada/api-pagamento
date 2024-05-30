@@ -1,0 +1,25 @@
+meta {
+  name: Autenticação
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "admin@example.com",
+    "password": "password"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() === 200){
+    let body = res.getBody();
+    let token = bru.setEnvVar("token", body.access_token)
+  }
+}
