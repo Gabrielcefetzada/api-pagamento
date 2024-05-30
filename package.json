@@ -1,13 +1,16 @@
 {
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "devDependencies": {
-        "axios": "^1.6.4",
-        "laravel-vite-plugin": "^1.0",
-        "vite": "^5.0"
-    }
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "husky:setup": "$npm_config_exec_mode docker exec -i api-pagamento-laravel.test-1 npm install && npx husky init && echo '#!/bin/sh\n files=$(git diff --cached --name-only --diff-filter=ACM -- '\"'\"'*.php'\"'\"');\n'\"$npm_config_exec_mode\"' docker exec -i api-pagamento-laravel.test-1 ./vendor/bin/pint $files -q\ngit add $files' > .husky/pre-commit",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "axios": "^1.6.4",
+    "husky": "^9.0.11",
+    "laravel-vite-plugin": "^1.0",
+    "vite": "^5.0"
+  }
 }
