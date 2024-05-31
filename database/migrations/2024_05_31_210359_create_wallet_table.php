@@ -11,10 +11,11 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create('wallets', function (Blueprint $table) {
-            $table->ulid('id');
+            $table->ulid('id')->primary();
             $table->timestamps();
-            $table->foreignId('user_id')->constrained();
-            $table->bigInteger('balance')->default(0);
+            $table->ulid('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('balance')->default(0);
         });
     }
 
