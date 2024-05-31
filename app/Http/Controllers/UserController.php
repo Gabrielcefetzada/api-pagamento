@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserAuthRequest;
+use App\Http\Requests\UserRegister;
 use App\Http\Requests\UserRegisterStoreKeeper;
 use App\Http\Services\UserService;
 
@@ -25,6 +26,15 @@ class UserController
     public function logout()
     {
         return $this->userService->logout();
+    }
+
+    public function registerCommonUser(UserRegister $request)
+    {
+        try {
+            return response()->json($this->userService->registerCommonUser($request));
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function registerStoreKeeper(UserRegisterStoreKeeper $request)

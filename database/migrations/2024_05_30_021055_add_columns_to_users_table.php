@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('cpf', 11)->unique();
-            $table->string('cnpj', 14)->nullable();
+            $table->string('cnpj', 14)->unique()->nullable();
         });
     }
 
