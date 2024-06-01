@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\NoBalanceException;
 use App\Http\Requests\Transfer;
 use App\Http\Resources\TranseferenceResource;
 use App\Interfaces\AntiFraudInterface;
@@ -65,7 +66,10 @@ class TransferenceService
     private function checkPayerBalance(Wallet $payerWallet, int $transferenceAmount)
     {
         if ($payerWallet->balance < $transferenceAmount) {
-            throw new \Exception("Saldo insuficiente. Você tentou realizar uma transferência de R$ " . $transferenceAmount / 100 . ", mas possui na carteira R$ " . $payerWallet->getHumanBalance());
+            throw new NoBalanceException([
+                'transferenceAmount' => $transferenceAmount / 100,
+                'payerWallet'        => $payerWallet->getHumanBalance(),
+            ]);
         }
     }
 }
