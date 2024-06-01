@@ -4,24 +4,21 @@ namespace App\Http\Services;
 
 use App\Http\Requests\Transfer;
 use App\Http\Resources\TranseferenceResource;
+use App\Interfaces\AntiFraudInterface;
 use App\Models\Transference;
 use App\Models\Wallet;
 
 class TransferenceService
 {
     public function __construct(
-        public Wallet $walletModel,
+        public Wallet             $walletModel,
+        public AntiFraudInterface $antiFraud
     ) {
     }
+
     public function transfer(Transfer $request): TranseferenceResource
     {
-        if ($request['payer'] != auth()->id()) {
-            throw new \Exception('Você deve fazer a transferência com seu usuário');
-        }
-
-        if ($request['payer'] === $request['payee']) {
-            throw new \Exception('Não é possível realizar transferências para si mesmo');
-        }
+        $this->firstChecks($request);
 
         $payeeWallet = $this->walletModel::with('user')->where('user_id', $request['payee'])->sharedLock()->first();
         $payerWallet = $this->walletModel::with('user')->where('user_id', $request['payer'])->sharedLock()->first();
@@ -48,6 +45,21 @@ class TransferenceService
         $payerWallet->update(['balance' => $payerWallet['balance'] - $request['value']]);
 
         return new TranseferenceResource($transferenceWithAgents);
+    }
+
+    private function firstChecks(Transfer $request)
+    {
+        if ($request['payer'] != auth()->id()) {
+            throw new \Exception('Você deve fazer a transferência com seu usuário');
+        }
+
+        if ($request['payer'] === $request['payee']) {
+            throw new \Exception('Não é possível realizar transferências para si mesmo');
+        }
+
+        if (!$this->antiFraud->authorize()) {
+            throw new \Exception('Não autorizado');
+        }
     }
 
     private function checkPayerBalance(Wallet $payerWallet, int $transferenceAmount)

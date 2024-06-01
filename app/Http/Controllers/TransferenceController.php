@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Transfer;
 use App\Http\Resources\TranseferenceResource;
+use App\Http\Services\AntiFraudService;
 use App\Http\Services\TransferenceService;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
@@ -15,7 +16,7 @@ class TransferenceController extends Controller
     {
         try {
             DB::beginTransaction();
-            $response = (new TransferenceService(new Wallet()))->transfer($request);
+            $response = (new TransferenceService(new Wallet(), new AntiFraudService()))->transfer($request);
             DB::commit();
             return $response;
         } catch (\Throwable $th) {
