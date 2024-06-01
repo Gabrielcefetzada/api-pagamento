@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Requests\Transfer;
+use App\Http\Resources\TranseferenceResource;
 use App\Models\Transference;
 use App\Models\Wallet;
 
@@ -12,10 +13,14 @@ class TransferenceService
         public Wallet $walletModel,
     ) {
     }
-    public function transfer(Transfer $request)
+    public function transfer(Transfer $request): TranseferenceResource
     {
         if ($request['payer'] != auth()->id()) {
-            throw new \Exception('Você não pode fazer uma transferência como outro usuário');
+            throw new \Exception('Você deve fazer a transferência com seu usuário');
+        }
+
+        if ($request['payer'] === $request['payee']) {
+            throw new \Exception('Não é possível realizar transferências para si mesmo');
         }
 
         $payeeWallet = $this->walletModel::with('user')->where('user_id', $request['payee'])->sharedLock()->first();
@@ -37,14 +42,12 @@ class TransferenceService
             ]
         );
 
+        $transferenceWithAgents = ($transference::with(['payee'])->where('id', $transference->id)->first());
+
         $payeeWallet->update(['balance' => $payeeWallet['balance'] + $request['value']]);
         $payerWallet->update(['balance' => $payerWallet['balance'] - $request['value']]);
 
-        return [
-            'success'         => true,
-            'transference_id' => $transference->id,
-            'amount'          => $transference->amount * 100,
-        ];
+        return new TranseferenceResource($transferenceWithAgents);
     }
 
     private function checkPayerBalance(Wallet $payerWallet, int $transferenceAmount)

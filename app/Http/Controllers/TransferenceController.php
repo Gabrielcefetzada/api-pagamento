@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Transfer;
+use App\Http\Resources\TranseferenceResource;
 use App\Http\Services\TransferenceService;
 use App\Models\Wallet;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 class TransferenceController extends Controller
 {
-    public function transfer(Transfer $request)
+    public function store(Transfer $request): TranseferenceResource|JsonResponse
     {
         try {
             DB::beginTransaction();
