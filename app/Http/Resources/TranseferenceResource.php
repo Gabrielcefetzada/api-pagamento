@@ -17,7 +17,7 @@ class TranseferenceResource extends JsonResource
         return [
             'id'     => $this->id,
             'amount' => $this->amount,
-          'payee'    => new UserResource($this->payee),
+            'payee'  => new UserResource($this->payee),
             'payer'  => new UserResource($this->payer),
         ];
     }
