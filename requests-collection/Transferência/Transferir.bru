@@ -1,0 +1,21 @@
+meta {
+  name: Transferir
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/transfer
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    
+  }
+}

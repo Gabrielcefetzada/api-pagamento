@@ -13,8 +13,8 @@ class Transference extends Model
     use HasUlids;
 
     protected $fillable = [
-        'payer',
-        'payer_user_id',
+        'payer_id',
+        'payee_id',
         'amount'
     ];
 

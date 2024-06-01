@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +9,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
@@ -20,7 +17,6 @@ class User extends Authenticatable
     use Notifiable;
     use HasRoles;
     use HasApiTokens;
-    use HasUlids;
 
     /**
      * The attributes that are mass assignable.

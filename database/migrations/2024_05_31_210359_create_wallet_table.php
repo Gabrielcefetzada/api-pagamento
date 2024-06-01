@@ -13,8 +13,7 @@ return new class () extends Migration {
         Schema::create('wallets', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->timestamps();
-            $table->ulid('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreignId('user_id')->constrained();
             $table->unsignedBigInteger('balance')->default(0);
         });
     }

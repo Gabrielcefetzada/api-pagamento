@@ -11,12 +11,12 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create('transferences', function (Blueprint $table) {
-            $table->ulid()->primary();
+            $table->ulid('id')->primary();
             $table->timestamps();
-            $table->ulid('payer');
-            $table->foreign('payer_user_id')->references('id')->on('users');
-            $table->ulid('payee');
-            $table->foreign('payee_user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('payer_id');
+            $table->foreign('payer_id')->references('id')->on('users');
+            $table->unsignedBigInteger('payee_id');
+            $table->foreign('payee_id')->references('id')->on('users');
             $table->unsignedBigInteger('amount');
         });
     }
@@ -27,8 +27,8 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('transferences', function (Blueprint $table) {
-            $table->dropForeign(['payer_user_id']);
-            $table->dropForeign(['payee_user_id']);
+            $table->dropForeign(['payer_id']);
+            $table->dropForeign(['payee_id']);
         });
         Schema::dropIfExists('transferences');
     }
