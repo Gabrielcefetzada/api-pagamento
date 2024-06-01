@@ -22,7 +22,7 @@ class Transfer extends FormRequest
     public function rules(): array
     {
         return [
-            'value' => 'required|decimal:1,2|min:0.01',
+            'value' => 'required|regex:/^\d+(\.\d{1,2})?$/|min:0.01',
             'payee' => 'required|integer',
             'payer' => 'required|integer'
         ];
@@ -31,10 +31,10 @@ class Transfer extends FormRequest
     public function messages()
     {
         return [
-            'required'      => 'O campo :attribute é obrigatório',
-            'integer'       => 'O campo :attribute deve ser um inteiro',
-            'value.min'     => 'O campo :attribute deve ser maior que 0',
-            'value.decimal' => 'O campo :attribute deve ser um decimal com no máximo duas casas decimais e no mínimo uma',
+            'required'    => 'O campo :attribute é obrigatório',
+            'integer'     => 'O campo :attribute deve ser um inteiro',
+            'value.min'   => 'O campo :attribute deve ser maior que 0',
+            'value.regex' => 'O campo :attribute deve ser um decimal com no máximo duas casas decimais e no mínimo uma',
         ];
     }
 }
