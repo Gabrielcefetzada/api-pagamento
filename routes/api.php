@@ -10,7 +10,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    Route::post('transfer', [TransferenceController::class, 'store'])->middleware(EnsureStoreKeeperCantTransfer::class);
+    Route::post('transfer', [TransferenceController::class, 'transfer'])->middleware(EnsureStoreKeeperCantTransfer::class);
     ;
     Route::post('logout', [UserController::class, 'logout']);
 });

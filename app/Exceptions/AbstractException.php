@@ -27,29 +27,25 @@ class AbstractException extends Exception
         if (!is_null($previous) && method_exists($previous, 'report')) {
             $previous->report();
         }
-        match ($this->level->jsonSerialize()) {
-            'warning' => $this->sendReport('warning'),
-            'error'   => $this->sendReport('error'),
-            'alert'   => $this->sendReport('alert'),
-            'info'    => $this->sendReport('info'),
-        };
+
+        $this->sendReport('error');
     }
 
-    private function sendReport(string $level): void
+    private function sendReport(): void
     {
         if (app()->environment('local')) {
-            Log::$level($this->debugMessage, $this->contextualData);
+            Log::error($this->debugMessage, $this->contextualData);
         }
     }
 
-    public function render(Request $request): Response
+    public function render(): Response
     {
+        $this->report();
         return response(
             [
                 'error' => [
                     'httpCode' => $this->code,
                     'type'     => $this->type,
-                    'level'    => $this->level,
                     'message'  => $this->message,
                 ],
             ],

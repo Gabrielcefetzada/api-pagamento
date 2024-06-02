@@ -2,7 +2,11 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\AntiFraudException;
 use App\Exceptions\NoBalanceException;
+use App\Exceptions\PayeeNotFoundException;
+use App\Exceptions\TransferActingAsAnotherUserException;
+use App\Exceptions\TransferToYourSelfException;
 use App\Http\Requests\Transfer;
 use App\Http\Resources\TranseferenceResource;
 use App\Interfaces\AntiFraudInterface;
@@ -17,6 +21,13 @@ class TransferenceService
     ) {
     }
 
+    /**
+     * @throws AntiFraudException
+     * @throws NoBalanceException
+     * @throws TransferActingAsAnotherUserException
+     * @throws TransferToYourSelfException
+     * @throws PayeeNotFoundException
+     */
     public function transfer(Transfer $request): TranseferenceResource
     {
         $this->firstChecks($request);
@@ -25,7 +36,7 @@ class TransferenceService
         $payerWallet = $this->walletModel::with('user')->where('user_id', $request['payer'])->sharedLock()->first();
 
         if (!$payeeWallet) {
-            throw new \Exception('Destinatário não cadastrado!');
+            throw new PayeeNotFoundException(['payee' => $request['payee']]);
         }
 
         $request['value'] = $request['value'] * 100;
@@ -51,15 +62,15 @@ class TransferenceService
     private function firstChecks(Transfer $request)
     {
         if ($request['payer'] != auth()->id()) {
-            throw new \Exception('Você deve fazer a transferência com seu usuário');
+            throw new TransferActingAsAnotherUserException([]);
         }
 
         if ($request['payer'] === $request['payee']) {
-            throw new \Exception('Não é possível realizar transferências para si mesmo');
+            throw new TransferToYourSelfException([]);
         }
 
         if (!$this->antiFraud->authorize()) {
-            throw new \Exception('Não autorizado');
+            throw new AntiFraudException([]);
         }
     }
 
