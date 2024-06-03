@@ -9,6 +9,7 @@ use App\Http\Services\TransferenceService;
 use App\Models\Wallet;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class TransferenceController extends Controller
@@ -27,6 +28,9 @@ class TransferenceController extends Controller
             if (method_exists($ex, 'render')) {
                 return $ex->render($request);
             }
+
+            dump($ex->getMessage());
+            Log::error($ex);
 
             return response([
                 'error' => [

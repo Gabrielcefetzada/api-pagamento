@@ -10,6 +10,7 @@ use App\Exceptions\TransferToYourSelfException;
 use App\Http\Requests\Transfer;
 use App\Http\Resources\TranseferenceResource;
 use App\Interfaces\AntiFraudInterface;
+use App\Jobs\SendTransferenceDoneNotification;
 use App\Models\Transference;
 use App\Models\Wallet;
 
@@ -17,7 +18,7 @@ class TransferenceService
 {
     public function __construct(
         public Wallet             $walletModel,
-        public AntiFraudInterface $antiFraud
+        public AntiFraudInterface $antiFraud,
     ) {
     }
 
@@ -51,10 +52,12 @@ class TransferenceService
             ]
         );
 
-        $transferenceWithAgents = ($transference::with(['payee'])->where('id', $transference->id)->first());
+        $transferenceWithAgents = ($transference::with(['payee', 'payer'])->where('id', $transference->id)->first());
 
         $payeeWallet->update(['balance' => $payeeWallet['balance'] + $request['value']]);
         $payerWallet->update(['balance' => $payerWallet['balance'] - $request['value']]);
+
+        SendTransferenceDoneNotification::dispatch($transferenceWithAgents);
 
         return new TranseferenceResource($transferenceWithAgents);
     }
