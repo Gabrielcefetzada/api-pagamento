@@ -29,7 +29,6 @@ class TransferenceController extends Controller
                 return $ex->render($request);
             }
 
-            dump($ex->getMessage());
             Log::error($ex);
 
             return response([

@@ -44,18 +44,7 @@ class TransferenceService
 
         $this->checkPayerBalance($payerWallet, $request['value']);
 
-        $transference = Transference::create(
-            [
-                'payer_id' => $request['payer'],
-                'payee_id' => $request['payee'],
-                'amount'   => $request['value'],
-            ]
-        );
-
-        $transferenceWithAgents = ($transference::with(['payee', 'payer'])->where('id', $transference->id)->first());
-
-        $payeeWallet->update(['balance' => $payeeWallet['balance'] + $request['value']]);
-        $payerWallet->update(['balance' => $payerWallet['balance'] - $request['value']]);
+        $transferenceWithAgents = $this->persistTransference($request, $payeeWallet, $payerWallet);
 
         SendTransferenceDoneNotification::dispatch($transferenceWithAgents);
 
@@ -85,5 +74,23 @@ class TransferenceService
                 'payerWallet'        => $payerWallet->getHumanBalance(),
             ]);
         }
+    }
+
+    private function persistTransference(Transfer $request, Wallet $payeeWallet, Wallet $payerWallet): Transference
+    {
+        $transference = Transference::create(
+            [
+                'payer_id' => $request['payer'],
+                'payee_id' => $request['payee'],
+                'amount'   => $request['value'],
+            ]
+        );
+
+        $transferenceWithAgents = ($transference::with(['payee', 'payer'])->where('id', $transference->id)->first());
+
+        $payeeWallet->update(['balance' => $payeeWallet['balance'] + $request['value']]);
+        $payerWallet->update(['balance' => $payerWallet['balance'] - $request['value']]);
+
+        return $transferenceWithAgents;
     }
 }
