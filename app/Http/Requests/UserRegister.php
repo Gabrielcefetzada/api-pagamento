@@ -2,22 +2,31 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CpfRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRegister extends FormRequest
 {
-    protected array $commonRules = [
-        'email'    => 'required|email',
-        'password' => "required|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|min:6",
-        'cpf'      => 'required|regex:/^\d{3}.?\d{3}.?\d{3}\-?\d{2}$/',
-        'name'     => 'required|regex:/^\S+\s+\S+/'
-    ];
+    protected array $commonRules;
+
+    public function __construct()
+    {
+        $this->commonRules = [
+            'email'    => 'required|email',
+            'password' => [
+                'required',
+                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',
+                'min:6'
+            ],
+            'cpf'  => ['required', 'string', new CpfRule()],
+            'name' => 'required|regex:/^\S+\s+\S+/'
+        ];
+    }
 
     protected array $commonMessages = [
         'password.regex' => 'A senha deve cumprir os requisitos: Ao menos uma letra minúscula, uma maiúscula, um número e um caracter especial',
         'password.min'   => 'A senha deve ter pelo menos seis caracteres',
         'required'       => 'O campo :attribute é obrigatório',
-        'cpf.regex'      => 'O cpf é inválido',
         'name.regex'     => 'Por favor, insira um nome completo'
     ];
     /**
