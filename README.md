@@ -39,7 +39,7 @@ Geramos um valor para a env var APP\_KEY e rodamos as migrações necessários d
 
 Sobre os usuários cadastrados temos
 
-Um usuário comum, login →
+Um usuário comum. Inclusive é o único que possui saldo por padrão ($100). Login →
 ```json
 {
   "email": "commonUser@example.com", 
