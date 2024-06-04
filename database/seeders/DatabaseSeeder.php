@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
 
         if (App::Environment('local')) {
             $this->call(UserSeeder::class);
+            $this->call(WalletSeeder::class);
         }
     }
 }

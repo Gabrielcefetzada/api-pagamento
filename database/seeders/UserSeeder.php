@@ -26,14 +26,14 @@ class UserSeeder extends Seeder
             'cpf'   => '59335481033',
             'cnpj'  => '69883236000110'
         ])->assignRole('store-keeper');
-        ;
 
-        User::factory()->create([
+        $commonUser = User::factory()->make([
             'name'  => 'Jolene Usuario Comum',
             'email' => 'commonuser@example.com',
             'cpf'   => '89853444046',
             'cnpj'  => null
         ])->assignRole('common-user');
-        ;
+
+        $commonUser->saveQuietly();
     }
 }
