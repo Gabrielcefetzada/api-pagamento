@@ -6,6 +6,8 @@ use App\Http\Requests\UserAuthRequest;
 use App\Http\Requests\UserRegister;
 use App\Http\Requests\UserRegisterStoreKeeper;
 use App\Http\Services\UserService;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class UserController
 {
@@ -18,22 +20,39 @@ class UserController
     {
         try {
             return response()->json($this->userService->login($request));
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
+        } catch (\Exception $ex) {
+            if (method_exists($ex, 'render')) {
+                return $ex->render($request);
+            }
 
-    public function logout()
-    {
-        return $this->userService->logout();
+            Log::error($ex);
+
+            return response([
+                'error' => [
+                    'httpCode' => ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+                    'message'  => 'Erro de servidor',
+                ],
+            ], ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function registerCommonUser(UserRegister $request)
     {
         try {
             return response()->json($this->userService->registerCommonUser($request));
-        } catch (\Throwable $th) {
-            throw $th;
+        } catch (\Exception $ex) {
+            if (method_exists($ex, 'render')) {
+                return $ex->render($request);
+            }
+
+            Log::error($ex);
+
+            return response([
+                'error' => [
+                    'httpCode' => ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+                    'message'  => 'Erro de servidor',
+                ],
+            ], ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -41,8 +60,19 @@ class UserController
     {
         try {
             return response()->json($this->userService->registerStoreKeeper($request));
-        } catch (\Throwable $th) {
-            throw $th;
+        } catch (\Exception $ex) {
+            if (method_exists($ex, 'render')) {
+                return $ex->render($request);
+            }
+
+            Log::error($ex);
+
+            return response([
+                'error' => [
+                    'httpCode' => ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+                    'message'  => 'Erro de servidor',
+                ],
+            ], ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

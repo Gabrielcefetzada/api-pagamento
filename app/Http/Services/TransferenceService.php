@@ -17,7 +17,7 @@ use App\Models\Wallet;
 class TransferenceService
 {
     public function __construct(
-        public Wallet             $walletModel,
+        public Wallet $walletModel,
         public AntiFraudInterface $antiFraud,
     ) {
     }
@@ -36,7 +36,7 @@ class TransferenceService
         $payeeWallet = $this->walletModel::with('user')->where('user_id', $request['payee'])->sharedLock()->first();
         $payerWallet = $this->walletModel::with('user')->where('user_id', $request['payer'])->sharedLock()->first();
 
-        if (!$payeeWallet) {
+        if (! $payeeWallet) {
             throw new PayeeNotFoundException(['payee' => $request['payee']]);
         }
 
@@ -51,7 +51,12 @@ class TransferenceService
         return new TranseferenceResource($transferenceWithAgents);
     }
 
-    private function firstChecks(Transfer $request)
+    /**
+     * @throws AntiFraudException
+     * @throws TransferToYourSelfException
+     * @throws TransferActingAsAnotherUserException
+     */
+    private function firstChecks(Transfer $request): void
     {
         if ($request['payer'] != auth()->id()) {
             throw new TransferActingAsAnotherUserException([]);
@@ -61,11 +66,14 @@ class TransferenceService
             throw new TransferToYourSelfException([]);
         }
 
-        if (!$this->antiFraud->authorize()) {
+        if (! $this->antiFraud->authorize()) {
             throw new AntiFraudException([]);
         }
     }
 
+    /**
+     * @throws NoBalanceException
+     */
     private function checkPayerBalance(Wallet $payerWallet, int $transferenceAmount)
     {
         if ($payerWallet->balance < $transferenceAmount) {
