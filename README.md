@@ -1,66 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Configuraração e Setup do Projeto**
 
-## About Laravel
+**Arquivo .env**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A fins de praticidade e por existir apenas localmente, basta copiar o .env.example, criar um
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+novo .env e copiar o conteúdo daquele para este. A única coisa que deve ser preenchida é a variável APP\_KEY. Para siga o próximo passo primeiro.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Start no servidor**
 
-## Learning Laravel
+O projeto roda com Docker e Docker Compose, com 4 contâiners – Aplicação Laravel, Mailpit, Mysql e Redis.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Execute:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```shell
+sudo docker compose up
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+ou se já tiver configurado um grupo para o Docker: docker compose up
 
-## Laravel Sponsors
+Entre no contâiner do laravel:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```shell
+sudo docker exec -it api-pagamento-laravel.test-1 bash Execute:
+```
 
-### Premium Partners
+```shell
+php artisan composer install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+php artisan key:generate
 
-## Contributing
+php artisan migrate:fresh --seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Geramos um valor para a env var APP\_KEY e rodamos as migrações necessários do banco e o populamos com alguns usuários, criação de carteira, e permissões.
 
-## Code of Conduct
+**Usuários**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Sobre os usuários cadastrados temos
 
-## Security Vulnerabilities
+Um usuário comum, login →
+```json
+{
+  "email": "commonUser@example.com", 
+  "password": "password"
+}  
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Um lojista
+```json
+{
+  "email": "storekeeper@example.com",
+  "password": "password"
+}
+```
+Um admin
+```json
+{
+    "email": "admin@example.com",
+    "password": "password"
+}
+```
+**Fila de e-mails**
 
-## License
+Quando se cria uma transação, um job de envio de e-mail é disparado na fila padrão. Para deixar o worker da fila aberto basta rodar em outra aba do terminal, dentro do container:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```shell
+php artisan queue:work
+```
+**Endpoints**
+
+A collection com os endpoints da api estão dentro da pasta docs/requests-collection.json. Mas além disso, a escolha do client api para testar os endpoints foi o Bruno. Bruno é um cliente de API Opensource, gratuito, rápido e compatível com Git, que visa revolucionar o status quo representado por Postman, Insomnia e ferramentas similares por aí. Bruno armazena suas coleções diretamente em uma pasta no seu sistema de arquivos. Usam uma linguagem de marcação de texto simples, Bru, para salvar informações sobre solicitações de API. Você pode usar o git ou qualquer controle de versão de sua escolha para colaborar em suas coleções de API.
+
+A pasta do Bruno no projeto é a /requests-collection
+
+**Testes**
+
+Na aplicação, existem testes de Unidade e de Feature. Para rodar os testes, basta entrar no container e executar:
+
+```shell
+php artisan test
+```
+**CI/CD**
+
+A aplicação contém uma simples pipe que roda todos os testes antes de uma PR para a master ou um push para master. Localizada em: **.github/workflows/pipeline.yml**

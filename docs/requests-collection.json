@@ -1,0 +1,134 @@
+{
+  "info": {
+    "name": "requests-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "bruno",
+      "event": []
+    },
+    {
+      "name": "Anti Fraude",
+      "item": [
+        {
+          "name": "Pré Transferência",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "https://util.devi.tools/api/v2/authorize"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Serviço de notificação",
+      "item": [
+        {
+          "name": "Serviço Disponível",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "https://util.devi.tools/api/v1/notify"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transferência",
+      "item": [
+        {
+          "name": "Transferir",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/transfer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 0.01,\n  \"payee\": 3,\n  \"payer\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Registrar Lojista",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/register-store-keeper",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\":\"new-user23@email.com\",\n  \"password\":\"Da2!abcd\",\n  \"cnpj\": \"69883236000111\",\n  \"cpf\":\"23423423436\",\n  \"name\": \"Tito lee An Chen\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrar Usuário Comum",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/register-common-user",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\":\"new-user3@email.com\",\n  \"password\":\"Da2!abcd\",\n  \"cpf\":\"23423423418\",\n  \"name\": \"Tito lee An Chen\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
