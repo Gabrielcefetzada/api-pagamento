@@ -28,6 +28,21 @@ class TransferenceTest extends TestCase
     protected AntiFraudInterface $antiFraud;
     protected TransferenceService $service;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Queue::fake();
+
+        $this->createUsers();
+        $this->createWallets();
+
+        $this->antiFraud = \Mockery::mock(AntiFraudInterface::class);
+        $this->antiFraud->shouldReceive('authorize')->andReturn(true);
+
+        Notification::fake();
+
+        $this->service = new TransferenceService($this->payerWallet, $this->antiFraud);
+    }
 
     private function createUsers(): void
     {
@@ -51,21 +66,6 @@ class TransferenceTest extends TestCase
             'user_id' => $this->payee->id,
             'balance' => 5000,
         ]);
-    }
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Queue::fake();
-
-        $this->createUsers();
-        $this->createWallets();
-
-        $this->antiFraud = \Mockery::mock(AntiFraudInterface::class);
-        $this->antiFraud->shouldReceive('authorize')->andReturn(true);
-
-        Notification::fake();
-
-        $this->service = new TransferenceService($this->payerWallet, $this->antiFraud);
     }
 
     public function test_successful_transfer()
