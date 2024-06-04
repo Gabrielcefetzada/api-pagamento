@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\TestCase;
 class UserTest extends TestCase
 {
     public function test_register_with_invalid_cpf()
-    {
+    {a
         $response = $this->postJson('/register-common-user', [
             'name'     => 'John Doe',
             'cpf'      => '12345678900',
