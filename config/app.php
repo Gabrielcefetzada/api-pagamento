@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => env('America_Sao_Paulo', 'UTC'),
+    'timezone' => 'America/Sao_Paulo',
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return [
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => 'America/Sao_Paulo',
 
     /*
     |--------------------------------------------------------------------------

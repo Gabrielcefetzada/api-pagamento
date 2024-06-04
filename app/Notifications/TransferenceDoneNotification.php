@@ -25,9 +25,13 @@ class TransferenceDoneNotification extends Notification implements NotificationS
 
     private function healthy(): bool
     {
-        $response = Http::post(env('NOTIFICATION_SERVICE_BASE_URL').'/api/v2/notify');
+        if (env('NOTIFICATION_SERVICE_ACTIVE')) {
+            $response = Http::post(env('NOTIFICATION_SERVICE_BASE_URL').'/api/v2/notify');
 
-        return $response->status() === ResponseAlias::HTTP_NO_CONTENT;
+            return $response->status() === ResponseAlias::HTTP_NO_CONTENT;
+        }
+
+        return false;
     }
 
     /**
