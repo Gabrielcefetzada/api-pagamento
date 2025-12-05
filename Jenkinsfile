@@ -53,8 +53,7 @@ pipeline {
                 sh 'php artisan test'
             }
         }
-        
-        // --- ESTÁGIO DE DEPLOY COM VALORES DIRETOS ---
+                
         stage('Deploy to Render') {
             steps {
                 sh """
