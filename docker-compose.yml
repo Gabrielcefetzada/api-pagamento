@@ -71,6 +71,18 @@ services:
             - '8025:8025'
         networks:
             - sail
+    jenkins:
+        container_name: jenkins
+        image: jenkins/jenkins:lts-jdk17
+        restart: unless-stopped
+        user: root
+        ports:
+            - "8081:8080"
+        volumes:
+            - './jenkins_data:/var/jenkins_home'
+            - '/var/run/docker.sock:/var/run/docker.sock' # O Jenkins precisa acessar o Docker do host
+            - '/usr/bin/docker:/usr/bin/docker' # Opcional, mas ajuda se precisar rodar comandos docker puros
+
 networks:
     sail:
         driver: bridge

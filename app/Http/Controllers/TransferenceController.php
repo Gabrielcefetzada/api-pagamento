@@ -28,7 +28,6 @@ class TransferenceController extends Controller
             if (method_exists($ex, 'render')) {
                 return $ex->render($request);
             }
-
             Log::error($ex);
 
             return response([

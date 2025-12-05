@@ -1,0 +1,223 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1549.vc8d7f497b_22f">
+  <actions>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-UserIdCause>
+            <userId>admin</userId>
+          </hudson.model.Cause_-UserIdCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+    <org.jenkinsci.plugins.workflow.libs.LibrariesAction plugin="pipeline-groovy-lib@752.vdddedf804e72">
+      <libraries/>
+    </org.jenkinsci.plugins.workflow.libs.LibrariesAction>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction plugin="pipeline-model-definition@2.2221.vc657003fb_d93">
+      <stagesUUID>29cc0c76-9882-4b59-b61e-4691dd003026</stagesUUID>
+      <pipelineDefs>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef plugin="pipeline-model-api@2.2221.vc657003fb_d93">
+          <stages>
+            <stages>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Build Sail Image</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">docker.build(&quot;laravel-sail:test&quot;, &quot;--build-arg WWWGROUP=${env.WWWGROUP} -f Dockerfile .&quot;)</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Run Tests in Sail Container</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">docker.image(&quot;laravel-sail:test&quot;).inside() {
+                        sh &apos;&apos;&apos;
+                            # Dentro do container Sail (já tem PHP 8.3, Composer, etc)
+                            cd /var/www/html
+                            
+                            # Clone seu repositório
+                            git clone https://github.com/Gabrielcefetzada/api-pagamento.git .
+                            
+                            # Configurar Laravel
+                            php -r &quot;file_exists(&apos;.env&apos;) || copy(&apos;.env.example&apos;, &apos;.env&apos;);&quot;
+                            composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+                            php artisan key:generate
+                            chmod -R 777 storage bootstrap/cache
+                            mkdir -p database
+                            touch database/database.sqlite
+                            
+                            # Executar testes
+                            DB_CONNECTION=sqlite DB_DATABASE=database/database.sqlite php artisan test
+                        &apos;&apos;&apos;
+                    }</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+            </stages>
+            <uuid>29cc0c76-9882-4b59-b61e-4691dd003026</uuid>
+          </stages>
+          <environment>
+            <variables class="linked-hash-map">
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>WWWGROUP</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  <value class="string">1000</value>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>WWWUSER</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  <value class="string">1000</value>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+              </entry>
+            </variables>
+          </environment>
+          <agent>
+            <agentType>
+              <key>any</key>
+            </agentType>
+          </agent>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef>
+      </pipelineDefs>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction>
+    <org.jenkinsci.plugins.workflow.cps.EnvActionImpl plugin="workflow-cps@4046.v90b_1b_9edec67">
+      <env class="tree-map"/>
+    </org.jenkinsci.plugins.workflow.cps.EnvActionImpl>
+  </actions>
+  <queueId>10</queueId>
+  <timestamp>1764898328309</timestamp>
+  <startTime>1764898328320</startTime>
+  <result>FAILURE</result>
+  <duration>1649</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>FAILURE</result>
+    <script>pipeline {
+    agent any
+    
+    environment {
+        // Use as mesmas variáveis do seu Sail
+        WWWGROUP = &apos;1000&apos;
+        WWWUSER = &apos;1000&apos;
+    }
+    
+    stages {
+        stage(&apos;Build Sail Image&apos;) {
+            steps {
+                script {
+                    // Build da imagem usando SEU Dockerfile
+                    docker.build(&quot;laravel-sail:test&quot;, &quot;--build-arg WWWGROUP=${env.WWWGROUP} -f Dockerfile .&quot;)
+                }
+            }
+        }
+        
+        stage(&apos;Run Tests in Sail Container&apos;) {
+            steps {
+                script {
+                    docker.image(&quot;laravel-sail:test&quot;).inside() {
+                        sh &apos;&apos;&apos;
+                            # Dentro do container Sail (já tem PHP 8.3, Composer, etc)
+                            cd /var/www/html
+                            
+                            # Clone seu repositório
+                            git clone https://github.com/Gabrielcefetzada/api-pagamento.git .
+                            
+                            # Configurar Laravel
+                            php -r &quot;file_exists(&apos;.env&apos;) || copy(&apos;.env.example&apos;, &apos;.env&apos;);&quot;
+                            composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+                            php artisan key:generate
+                            chmod -R 777 storage bootstrap/cache
+                            mkdir -p database
+                            touch database/database.sqlite
+                            
+                            # Executar testes
+                            DB_CONNECTION=sqlite DB_DATABASE=database/database.sqlite php artisan test
+                        &apos;&apos;&apos;
+                    }
+                }
+            }
+        }
+    }
+}</script>
+    <loadedScripts class="linked-hash-map"/>
+    <durabilityHint>MAX_SURVIVABILITY</durabilityHint>
+    <timings class="map">
+      <entry>
+        <string>flowNode</string>
+        <long>400692637</long>
+      </entry>
+      <entry>
+        <string>classLoad</string>
+        <long>578922794</long>
+      </entry>
+      <entry>
+        <string>runQueue</string>
+        <long>1256457356</long>
+      </entry>
+      <entry>
+        <string>run</string>
+        <long>1414894099</long>
+      </entry>
+      <entry>
+        <string>parse</string>
+        <long>160246952</long>
+      </entry>
+      <entry>
+        <string>saveProgram</string>
+        <long>233042561</long>
+      </entry>
+    </timings>
+    <internalCalls class="sorted-set">
+      <string>org.jenkinsci.plugins.pipeline.StageStatus.TAG_NAME</string>
+    </internalCalls>
+    <sandbox>true</sandbox>
+    <iota>24</iota>
+    <head>1:24</head>
+    <done>true</done>
+    <resumeBlocked>false</resumeBlocked>
+    <storageDir>workflow-completed</storageDir>
+  </execution>
+  <completed>true</completed>
+  <checkouts class="hudson.util.PersistedList"/>
+</flow-build>

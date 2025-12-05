@@ -31,7 +31,7 @@ class TransferenceDoneNotification extends Notification implements NotificationS
             return $response->status() === ResponseAlias::HTTP_NO_CONTENT;
         }
 
-        return false;
+        return true; // No repo acabei colocando false no retorno, equivocadamente
     }
 
     /**

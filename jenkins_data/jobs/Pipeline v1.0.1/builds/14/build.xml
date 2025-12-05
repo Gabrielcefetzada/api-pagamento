@@ -1,0 +1,351 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1549.vc8d7f497b_22f">
+  <actions>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-UserIdCause>
+            <userId>admin</userId>
+          </hudson.model.Cause_-UserIdCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+    <org.jenkinsci.plugins.workflow.libs.LibrariesAction plugin="pipeline-groovy-lib@752.vdddedf804e72">
+      <libraries/>
+    </org.jenkinsci.plugins.workflow.libs.LibrariesAction>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction plugin="pipeline-model-definition@2.2221.vc657003fb_d93">
+      <stagesUUID>8dbff78d-3c78-4189-b2c7-77f3242be14d</stagesUUID>
+      <pipelineDefs>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef plugin="pipeline-model-api@2.2221.vc657003fb_d93">
+          <stages>
+            <stages>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Checkout</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>checkout</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scm</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-GStringValue>
+                                <value class="string">[
+                    $class: &apos;GitSCM&apos;,
+                    branches: [[name: &apos;*/master&apos;]],
+                    userRemoteConfigs: [[
+                        url: &apos;https://github.com/Gabrielcefetzada/api-pagamento.git&apos;
+                    ]]
+                ]</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-GStringValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Setup PHP</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>sh</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>script</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">
+                    # Verificar/instalar PHP 8.2
+                    if ! command -v php &amp;&gt; /dev/null || ! php --version | grep -q &quot;8.2&quot;; then
+                        echo &quot;Instalando PHP 8.2...&quot;
+                        apt-get update
+                        apt-get install -y software-properties-common
+                        add-apt-repository ppa:ondrej/php -y
+                        apt-get update
+                        apt-get install -y php8.2 php8.2-curl php8.2-xml php8.2-mbstring                                            php8.2-zip php8.2-sqlite3 php8.2-mysql php8.2-bcmath
+                    fi
+                    
+                    # Verificar/instalar Composer
+                    if ! command -v composer &amp;&gt; /dev/null; then
+                        echo &quot;Instalando Composer...&quot;
+                        curl -sS https://getcomposer.org/installer | php
+                        mv composer.phar /usr/local/bin/composer
+                        chmod +x /usr/local/bin/composer
+                    fi
+                    
+                    php --version
+                    composer --version
+                </value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Setup Laravel</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>sh</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>script</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">
+                    # Configurar .env
+                    php -r &quot;file_exists(&apos;.env&apos;) || copy(&apos;.env.example&apos;, &apos;.env&apos;);&quot;
+                    
+                    # Instalar dependências
+                    composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+                    
+                    # Gerar chave da aplicação
+                    php artisan key:generate
+                    
+                    # Configurar permissões
+                    chmod -R 777 storage bootstrap/cache
+                    
+                    # Criar banco SQLite
+                    mkdir -p database
+                    touch database/database.sqlite
+                </value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Run Tests</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>sh</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>script</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">php artisan test</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+            </stages>
+            <uuid>8dbff78d-3c78-4189-b2c7-77f3242be14d</uuid>
+          </stages>
+          <postBuild>
+            <conditions>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildCondition>
+                <condition>always</condition>
+                <branch>
+                  <name>default</name>
+                  <steps>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                      <name>cleanWs</name>
+                      <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                        <arguments class="linked-hash-map"/>
+                      </args>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                  </steps>
+                </branch>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildCondition>
+            </conditions>
+          </postBuild>
+          <environment>
+            <variables class="linked-hash-map">
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>DB_CONNECTION</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  <value class="string">sqlite</value>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>DB_DATABASE</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  <value class="string">database/database.sqlite</value>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+              </entry>
+            </variables>
+          </environment>
+          <agent>
+            <agentType>
+              <key>any</key>
+            </agentType>
+          </agent>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef>
+      </pipelineDefs>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction>
+  </actions>
+  <queueId>26</queueId>
+  <timestamp>1764899440074</timestamp>
+  <startTime>1764899440101</startTime>
+  <result>FAILURE</result>
+  <duration>1514</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>FAILURE</result>
+    <script>pipeline {
+    agent any
+    
+    environment {
+        DB_CONNECTION = &apos;sqlite&apos;
+        DB_DATABASE = &apos;database/database.sqlite&apos;
+    }
+    
+    stages {
+        stage(&apos;Checkout&apos;) {
+            steps {
+                checkout([
+                    $class: &apos;GitSCM&apos;,
+                    branches: [[name: &apos;*/master&apos;]],
+                    userRemoteConfigs: [[
+                        url: &apos;https://github.com/Gabrielcefetzada/api-pagamento.git&apos;
+                    ]]
+                ])
+            }
+        }
+        
+        stage(&apos;Setup PHP&apos;) {
+            steps {
+                sh &apos;&apos;&apos;
+                    # Verificar/instalar PHP 8.2
+                    if ! command -v php &amp;&gt; /dev/null || ! php --version | grep -q &quot;8.2&quot;; then
+                        echo &quot;Instalando PHP 8.2...&quot;
+                        apt-get update
+                        apt-get install -y software-properties-common
+                        add-apt-repository ppa:ondrej/php -y
+                        apt-get update
+                        apt-get install -y php8.2 php8.2-curl php8.2-xml php8.2-mbstring \
+                                           php8.2-zip php8.2-sqlite3 php8.2-mysql php8.2-bcmath
+                    fi
+                    
+                    # Verificar/instalar Composer
+                    if ! command -v composer &amp;&gt; /dev/null; then
+                        echo &quot;Instalando Composer...&quot;
+                        curl -sS https://getcomposer.org/installer | php
+                        mv composer.phar /usr/local/bin/composer
+                        chmod +x /usr/local/bin/composer
+                    fi
+                    
+                    php --version
+                    composer --version
+                &apos;&apos;&apos;
+            }
+        }
+        
+        stage(&apos;Setup Laravel&apos;) {
+            steps {
+                sh &apos;&apos;&apos;
+                    # Configurar .env
+                    php -r &quot;file_exists(&apos;.env&apos;) || copy(&apos;.env.example&apos;, &apos;.env&apos;);&quot;
+                    
+                    # Instalar dependências
+                    composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+                    
+                    # Gerar chave da aplicação
+                    php artisan key:generate
+                    
+                    # Configurar permissões
+                    chmod -R 777 storage bootstrap/cache
+                    
+                    # Criar banco SQLite
+                    mkdir -p database
+                    touch database/database.sqlite
+                &apos;&apos;&apos;
+            }
+        }
+        
+        stage(&apos;Run Tests&apos;) {
+            steps {
+                sh &apos;php artisan test&apos;
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}</script>
+    <loadedScripts class="linked-hash-map"/>
+    <durabilityHint>MAX_SURVIVABILITY</durabilityHint>
+    <timings class="map">
+      <entry>
+        <string>flowNode</string>
+        <long>516446747</long>
+      </entry>
+      <entry>
+        <string>classLoad</string>
+        <long>280722755</long>
+      </entry>
+      <entry>
+        <string>runQueue</string>
+        <long>1795471168</long>
+      </entry>
+      <entry>
+        <string>run</string>
+        <long>1335058209</long>
+      </entry>
+      <entry>
+        <string>parse</string>
+        <long>111797995</long>
+      </entry>
+      <entry>
+        <string>saveProgram</string>
+        <long>296538362</long>
+      </entry>
+    </timings>
+    <internalCalls class="sorted-set">
+      <string>hudson.model.Result.fromString</string>
+      <string>org.jenkinsci.plugins.pipeline.StageStatus.TAG_NAME</string>
+      <string>org.jenkinsci.plugins.workflow.job.WorkflowRun.result</string>
+    </internalCalls>
+    <sandbox>true</sandbox>
+    <iota>36</iota>
+    <head>1:36</head>
+    <done>true</done>
+    <resumeBlocked>false</resumeBlocked>
+    <storageDir>workflow-completed</storageDir>
+  </execution>
+  <completed>true</completed>
+  <checkouts class="hudson.util.PersistedList"/>
+</flow-build>

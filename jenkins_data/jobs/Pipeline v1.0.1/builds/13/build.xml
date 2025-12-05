@@ -1,0 +1,192 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1549.vc8d7f497b_22f">
+  <actions>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-UserIdCause>
+            <userId>admin</userId>
+          </hudson.model.Cause_-UserIdCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+    <org.jenkinsci.plugins.workflow.libs.LibrariesAction plugin="pipeline-groovy-lib@752.vdddedf804e72">
+      <libraries/>
+    </org.jenkinsci.plugins.workflow.libs.LibrariesAction>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction plugin="pipeline-model-definition@2.2221.vc657003fb_d93">
+      <stagesUUID>d2cfc1fd-c2a0-4d3c-a8ee-a99bed803f12</stagesUUID>
+      <pipelineDefs>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef plugin="pipeline-model-api@2.2221.vc657003fb_d93">
+          <stages>
+            <stages>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Clone and Test</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                        <name>sh</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>script</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">
+                    # 1. Limpar tudo
+                    find . -mindepth 1 -delete 2&gt;/dev/null || true
+                    
+                    # 2. Clonar
+                    git clone https://github.com/Gabrielcefetzada/api-pagamento.git .
+                    
+                    # 3. Usar PHP direto (sem Docker)
+                    echo &quot;🔧 Configurando PHP...&quot;
+                    
+                    # Tentar instalar PHP se não existir
+                    if ! command -v php &amp;&gt; /dev/null; then
+                        echo &quot;Instalando PHP...&quot;
+                        apt-get update &amp;&amp; apt-get install -y php php-curl php-xml php-mbstring php-zip php-sqlite3
+                    fi
+                    
+                    # Instalar Composer
+                    if ! command -v composer &amp;&gt; /dev/null; then
+                        curl -sS https://getcomposer.org/installer | php
+                        mv composer.phar /usr/local/bin/composer
+                        chmod +x /usr/local/bin/composer
+                    fi
+                    
+                    echo &quot;📦 Instalando dependências...&quot;
+                    composer install --no-interaction --no-progress
+                    
+                    echo &quot;🔑 Configurando ambiente...&quot;
+                    cp .env.example .env
+                    php artisan key:generate
+                    
+                    echo &quot;🗄️ Preparando banco SQLite...&quot;
+                    mkdir -p database
+                    touch database/database.sqlite
+                    chmod -R 777 storage bootstrap/cache database
+                    
+                    echo &quot;🧪 Executando testes...&quot;
+                    DB_CONNECTION=sqlite DB_DATABASE=database/database.sqlite php artisan test
+                </value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+            </stages>
+            <uuid>d2cfc1fd-c2a0-4d3c-a8ee-a99bed803f12</uuid>
+          </stages>
+          <agent>
+            <agentType>
+              <key>any</key>
+            </agentType>
+          </agent>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef>
+      </pipelineDefs>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction>
+  </actions>
+  <queueId>24</queueId>
+  <timestamp>1764899248912</timestamp>
+  <startTime>1764899248957</startTime>
+  <result>FAILURE</result>
+  <duration>2797</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>FAILURE</result>
+    <script>pipeline {
+    agent any
+    
+    stages {
+        stage(&apos;Clone and Test&apos;) {
+            steps {
+                sh &apos;&apos;&apos;
+                    # 1. Limpar tudo
+                    find . -mindepth 1 -delete 2&gt;/dev/null || true
+                    
+                    # 2. Clonar
+                    git clone https://github.com/Gabrielcefetzada/api-pagamento.git .
+                    
+                    # 3. Usar PHP direto (sem Docker)
+                    echo &quot;🔧 Configurando PHP...&quot;
+                    
+                    # Tentar instalar PHP se não existir
+                    if ! command -v php &amp;&gt; /dev/null; then
+                        echo &quot;Instalando PHP...&quot;
+                        apt-get update &amp;&amp; apt-get install -y php php-curl php-xml php-mbstring php-zip php-sqlite3
+                    fi
+                    
+                    # Instalar Composer
+                    if ! command -v composer &amp;&gt; /dev/null; then
+                        curl -sS https://getcomposer.org/installer | php
+                        mv composer.phar /usr/local/bin/composer
+                        chmod +x /usr/local/bin/composer
+                    fi
+                    
+                    echo &quot;📦 Instalando dependências...&quot;
+                    composer install --no-interaction --no-progress
+                    
+                    echo &quot;🔑 Configurando ambiente...&quot;
+                    cp .env.example .env
+                    php artisan key:generate
+                    
+                    echo &quot;🗄️ Preparando banco SQLite...&quot;
+                    mkdir -p database
+                    touch database/database.sqlite
+                    chmod -R 777 storage bootstrap/cache database
+                    
+                    echo &quot;🧪 Executando testes...&quot;
+                    DB_CONNECTION=sqlite DB_DATABASE=database/database.sqlite php artisan test
+                &apos;&apos;&apos;
+            }
+        }
+    }
+}</script>
+    <loadedScripts class="linked-hash-map"/>
+    <durabilityHint>MAX_SURVIVABILITY</durabilityHint>
+    <timings class="map">
+      <entry>
+        <string>flowNode</string>
+        <long>169605418</long>
+      </entry>
+      <entry>
+        <string>classLoad</string>
+        <long>211327979</long>
+      </entry>
+      <entry>
+        <string>runQueue</string>
+        <long>563852616</long>
+      </entry>
+      <entry>
+        <string>run</string>
+        <long>774422487</long>
+      </entry>
+      <entry>
+        <string>parse</string>
+        <long>22860190</long>
+      </entry>
+      <entry>
+        <string>saveProgram</string>
+        <long>266853791</long>
+      </entry>
+    </timings>
+    <internalCalls class="sorted-set"/>
+    <sandbox>true</sandbox>
+    <iota>12</iota>
+    <head>1:12</head>
+    <done>true</done>
+    <resumeBlocked>false</resumeBlocked>
+    <storageDir>workflow-completed</storageDir>
+  </execution>
+  <completed>true</completed>
+  <checkouts class="hudson.util.PersistedList"/>
+</flow-build>
