@@ -53,6 +53,28 @@ pipeline {
                 sh 'php artisan test'
             }
         }
+        
+        stage('Deploy to Render') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'RENDER_API_TOKEN', variable: 'RENDER_TOKEN'),
+                    string(credentialsId: 'RENDER_SERVICE_ID', variable: 'SERVICE_ID')
+                ]) {
+                    sh """
+                    echo "Disparando deploy para o Render Service ID: \$SERVICE_ID"
+                    
+                    curl --request POST \\
+                        --url https://api.render.com/v1/services/\$SERVICE_ID/deploys \\
+                        --header 'accept: application/json' \\
+                        --header 'authorization: Bearer \$RENDER_TOKEN' \\
+                        --header 'content-type: application/json' \\
+                        --data '{
+                            "clearCache": "do_not_clear"
+                        }'
+                    """
+                }
+            }
+        }
     }
     
     post {
