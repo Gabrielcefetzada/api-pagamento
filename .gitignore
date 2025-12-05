@@ -18,3 +18,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+jenkins_data/*
+!jenkins_data/
