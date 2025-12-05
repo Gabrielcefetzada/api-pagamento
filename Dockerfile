@@ -47,41 +47,47 @@ RUN composer install ${COMPOSER_ARGS}
 
 # ----------------------------------------------------------------------
 # ESTÁGIO 2: PRODUCTION (Ambiente de Execução Final)
+# ...
 # ----------------------------------------------------------------------
 
-# Usa a imagem PHP-FPM Alpine (muito mais leve) para servir a aplicação
 FROM php:8.3-fpm-alpine AS production
 
-# 1. Instala dependências de runtime e de desenvolvimento necessárias para as extensões
+# 1. Instalação de dependências e extensões em um único bloco RUN
 RUN apk add --no-cache \
+    # Ferramentas Essenciais do Sistema
     nginx \
     bash \
     curl \
     git \
     tzdata \
-    # Dependências de Extensão que precisam ser instaladas novamente no Alpine
+    # Ferramenta para compilar extensões (CRÍTICO)
+    build-base \
+    # Dependências de Desenvolvimento para PHP Extensões
     libzip-dev \
     libpng-dev \
     libpq-dev \
     libxml2-dev \
     libjpeg-turbo-dev \
+    \
     # Instalação das Extensões
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd sockets zip \
     \
-    # Limpeza: Remove pacotes de desenvolvimento para manter a imagem pequena e segura
+    # Limpeza CRÍTICA: Remove pacotes de desenvolvimento e o build-base
     && apk del \
+    build-base \
     libzip-dev \
     libpng-dev \
     libpq-dev \
     libxml2-dev \
     libjpeg-turbo-dev \
     \
-    # Configuração de Fuso Horário
+    # Configuração de Fuso Horário e Limpeza Final
     && cp /usr/share/zoneinfo/UTC /etc/localtime \
     && echo "UTC" > /etc/timezone \
     \
-    # Limpeza final
     && rm -rf /var/cache/apk/*
+
+# ... (Resto do Dockerfile)
 
 # 2. Cria o usuário não-root 'www' (melhor segurança)
 RUN adduser -D -u 1000 www
