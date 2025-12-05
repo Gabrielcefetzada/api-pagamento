@@ -1,112 +1,31 @@
-# ----------------------------------------------------------------------
-# ESTÁGIO 1: BUILDER (Compilação de Assets e Dependências)
-# ----------------------------------------------------------------------
-FROM php:8.3-cli AS builder
+FROM php:8.3-cli
 
-# Variáveis do Projeto (Definidas para compatibilidade e flexibilidade)
-ARG NODE_VERSION=20
-ARG COMPOSER_ARGS="--no-dev --optimize-autoloader"
-
-WORKDIR /app
-
-# 1. Instala dependências do sistema
+# Instalar dependências mínimas
 RUN apt-get update && apt-get install -y \
-    git \
+    curl \
     unzip \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    curl \
-    sqlite3 \
-    libsqlite3-dev \
-    libpq-dev \
-    libzip-dev \
-    libmemcached-dev \
-    # Instala Node.js para compilação de assets
-    && curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
-    && apt-get install -y nodejs \
-    # Limpeza
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# 2. Instala extensões PHP necessárias para o Laravel
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd sockets zip
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 3. Instala e configura o Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# 4. Copia o código-fonte da raiz
-COPY . /app
-
-# 5. Instala dependências do PHP (Com "no-dev" para produção)
-RUN composer install ${COMPOSER_ARGS}
-
-# Se sua API for puramente backend, você pode OMITIR este bloco.
-# RUN npm install && npm run build
-
-
-# ----------------------------------------------------------------------
-# ESTÁGIO 2: PRODUCTION (Ambiente de Execução Final)
-# ...
-# ----------------------------------------------------------------------
-
-FROM php:8.3-fpm-alpine AS production
-
-# 1. Instalação de dependências e extensões em um único bloco RUN
-RUN apk add --no-cache \
-    # Ferramentas Essenciais do Sistema
-    nginx \
-    bash \
-    curl \
-    git \
-    tzdata \
-    # Ferramenta para compilar extensões (CRÍTICO)
-    build-base \
-    # Dependências de Desenvolvimento para PHP Extensões
-    libzip-dev \
-    libpng-dev \
-    libpq-dev \
-    libxml2-dev \
-    libjpeg-turbo-dev \
-    \
-    # Instalação das Extensões
-    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd sockets zip \
-    \
-    # Limpeza CRÍTICA: Remove pacotes de desenvolvimento e o build-base
-    && apk del \
-    build-base \
-    libzip-dev \
-    libpng-dev \
-    libpq-dev \
-    libxml2-dev \
-    libjpeg-turbo-dev \
-    \
-    # Configuração de Fuso Horário e Limpeza Final
-    && cp /usr/share/zoneinfo/UTC /etc/localtime \
-    && echo "UTC" > /etc/timezone \
-    \
-    && rm -rf /var/cache/apk/*
-
-# ... (Resto do Dockerfile)
-
-# 2. Cria o usuário não-root 'www' (melhor segurança)
-RUN adduser -D -u 1000 www
-
+# Diretório de trabalho
 WORKDIR /var/www/html
 
-# 3. Copia o código final do estágio 'builder'
-COPY --from=builder /app /var/www/html
+# Copiar tudo
+COPY . .
 
-# 4. Ajusta as permissões de pastas críticas
-RUN chown -R www:www /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+# Instalar dependências
+RUN composer install --no-dev --optimize-autoloader
 
-# 5. Copia o arquivo de configuração Nginx (deve estar na raiz)
-COPY default.conf /etc/nginx/http.d/default.conf
+# Gerar key se necessário
+RUN if [ ! -f .env ]; then \
+    cp .env.example .env && \
+    php artisan key:generate; \
+    fi
 
-# 6. Define a porta
-EXPOSE 80
+# Expoe porta dinâmica (Render usa PORT)
+EXPOSE $PORT
 
-# 7. Comando de entrada: Inicia o PHP-FPM e o Nginx
-CMD ["/bin/bash", "-c", "php-fpm && nginx -g 'daemon off;'"]
+# Comando simples
+CMD php artisan serve --host=0.0.0.0 --port=$PORT
