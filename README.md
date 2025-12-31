@@ -84,3 +84,5 @@ php artisan test
 **CI/CD**
 
 A aplicação contém uma simples pipe que roda todos os testes antes de uma PR para a master ou um push para master. Localizada em: **.github/workflows/pipeline.yml**
+
+Para fins de prova de conceito, posteriormente foi adicionado im JenkinsFile com o intuito de buildar a aplicação, rodar testes e fazer deploy no Render. A automação já foi desprovisionada tanto no Jenkins quanto no Render.
